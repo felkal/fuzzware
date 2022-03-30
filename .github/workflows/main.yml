@@ -20,7 +20,10 @@ jobs:
           mdbook-version: '0.4.10'
           # mdbook-version: 'latest'
 
-      - run: mdbook build ./docs
+      - run: |
+        mkdir docs/src
+        cp docs/*.md docs/src
+        mdbook build docs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
@@ -31,3 +34,6 @@ jobs:
           publish_branch: master
           publish_dir: ./docs/book
           destination_dir: ./
+      - run: |
+        rm -rf docs/src
+        rm -rf docs/book
