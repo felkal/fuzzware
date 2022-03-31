@@ -1,0 +1,44 @@
+name: docker
+
+on:
+  push:
+    branches:
+      - main
+      - github-ci
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3.0.0
+      - run: git submodule sync --recursive
+      - run: git submodule update --init --recursive
+      - run: ./build_docker.sh
+  fuzzing_ARCH_PRO_docker:
+    runs-on: ubuntu-20.04
+    needs: build_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Fuzz ARCH_PRO docker
+        run: ./run_docker.sh ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ARCH_PRO_docker_fuzzware-project
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/
+  fuzzing_CNC_docker:
+    runs-on: ubuntu-20.04
+    needs: build_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Fuzz CNC docker
+        run: ./run_docker.sh ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: CNC_docker_fuzzware-project
+          path: examples/P2IM/CNC/fuzzware-project-docker/
+
+
