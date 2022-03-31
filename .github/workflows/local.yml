@@ -1,0 +1,13 @@
+name: docker
+
+on:
+  push:
+    branches:
+      - main
+      - github-ci
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: ./build_docker.sh
