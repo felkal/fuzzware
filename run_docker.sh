@@ -28,7 +28,6 @@ while [[ $# -gt 0 ]]; do
         --no-tty)
             NO_TTY="true"
             shift
-            shift
             ;;
         -r)
             shift
