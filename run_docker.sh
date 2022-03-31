@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 DIR="$(dirname "$(readlink -f "$0")")"
 IMAGE=""
 targets_dir=""
 cmd=""
+NO_TTY=""
 while [[ $# -gt 0 ]]; do
     case $1 in
         -d)
@@ -24,6 +25,11 @@ while [[ $# -gt 0 ]]; do
                 shift
             done
             ;;
+        --no-tty)
+            NO_TTY="true"
+            shift
+            shift
+            ;;
         -r)
             shift
             if [ "$1" = "-d" ] || [ "$1" = "-c" ]; then
@@ -43,6 +49,7 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+echo $NO_TTY
 
 if [ -z "$targets_dir" ]; then
     targets_dir="$DIR/examples"
@@ -59,7 +66,7 @@ fi
 echo "[+] Mapping local dir '$targets_dir' into container"
 echo "[+] Executing command: '$cmd'"
 # Map targets directory into container
-if [[ -z "$CI" ]]; then
+if [[ ! -z "$NO_TTY" ]]; then
     docker_options="-i"
     echo "[+] Running with -i"
 else
