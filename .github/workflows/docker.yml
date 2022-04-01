@@ -26,6 +26,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
+      - name: download fuzzware image
       - uses: actions/download-artifact@master
         with:
           name: fuzzware_image
@@ -45,6 +46,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
+      - name: download fuzzware image
       - uses: actions/download-artifact@master
         with:
           name: fuzzware_image
