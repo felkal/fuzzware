@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Build fuzzware docker image
-      - uses: actions/checkout@v3.0.0
+        uses: actions/checkout@v3.0.0
       - run: git submodule sync --recursive
       - run: git submodule update --init --recursive
       - run: ./build_docker.sh
