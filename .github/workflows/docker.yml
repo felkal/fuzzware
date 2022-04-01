@@ -30,7 +30,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: fuzzware_image
-          path: fuzzware_latest.tar
+          path: ./fuzzware_latest.tar
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: fuzz ARCH_PRO docker
@@ -50,7 +50,7 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: fuzzware_image
-          path: fuzzware_latest.tar
+          path: ./fuzzware_latest.tar
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Fuzz CNC docker
