@@ -34,9 +34,11 @@ jobs:
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
         run: |
-          sudo echo core >/proc/sys/kernel/core_pattern
-          sudo cd /sys/devices/system/cpu
-          sudo echo performance | tee cpu*/cpufreq/scaling_governor
+          sudo su
+          echo core >/proc/sys/kernel/core_pattern
+          cd /sys/devices/system/cpu
+          echo performance | tee cpu*/cpufreq/scaling_governor
+          exit
       - name: fuzz ARCH_PRO docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
       - name: Upload project
@@ -58,9 +60,11 @@ jobs:
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
         run: |
-          sudo echo core >/proc/sys/kernel/core_pattern
-          sudo cd /sys/devices/system/cpu
-          sudo echo performance | tee cpu*/cpufreq/scaling_governor
+          sudo su
+          echo core >/proc/sys/kernel/core_pattern
+          cd /sys/devices/system/cpu
+          echo performance | tee cpu*/cpufreq/scaling_governor
+          exit
       - name: Fuzz CNC docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
       - name: Upload artifacts
