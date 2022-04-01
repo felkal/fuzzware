@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 DIR="$(dirname "$(readlink -f "$0")")"
 COMMIT=""
 
@@ -44,9 +44,11 @@ docker build -t "fuzzware:$COMMIT" \
     --build-arg USER_ID=$user_id \
     --build-arg GROUP_ID=$group_id \
     "$DIR"
+docker save "fuzzware:$COMMIT" -o fuzzware_$COMMIT.tar
 else
 docker build -t "fuzzware:latest" \
     --build-arg USER_ID=$user_id \
     --build-arg GROUP_ID=$group_id \
     "$DIR"
+docker save "fuzzware:latest" -o fuzzware_latest.tar
 fi

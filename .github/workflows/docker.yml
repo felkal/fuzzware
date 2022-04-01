@@ -10,19 +10,31 @@ jobs:
   build_docker:
     runs-on: ubuntu-20.04
     steps:
+      - name: Build fuzzware docker image
       - uses: actions/checkout@v3.0.0
       - run: git submodule sync --recursive
       - run: git submodule update --init --recursive
       - run: ./build_docker.sh
+      - name: Upload project
+        uses: actions/upload-artifact@v3
+        with:
+          name: fuzzware_image
+          path: fuzzware_latest.tar
   fuzzing_ARCH_PRO_docker:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
-      - name: Fuzz ARCH_PRO docker
+      - uses: actions/download-artifact@master
+        with:
+          name: fuzzware_image
+          path: fuzzware_latest.tar
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: fuzz ARCH_PRO docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
-      - name: Upload artifacts
+      - name: Upload project
         uses: actions/upload-artifact@v3
         with:
           name: ARCH_PRO_docker_fuzzware-project
@@ -33,6 +45,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
+      - uses: actions/download-artifact@master
+        with:
+          name: fuzzware_image
+          path: fuzzware_latest.tar
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
       - name: Fuzz CNC docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
       - name: Upload artifacts
