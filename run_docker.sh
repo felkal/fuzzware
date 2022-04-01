@@ -48,7 +48,6 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-echo $NO_TTY
 
 if [ -z "$targets_dir" ]; then
     targets_dir="$DIR/examples"

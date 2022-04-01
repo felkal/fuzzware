@@ -30,9 +30,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: fuzzware_image
-          run: ls
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
+      - name: Setup AFL
+        run: |
+          sudo echo core >/proc/sys/kernel/core_pattern
+          sudo cd /sys/devices/system/cpu
+          sudo echo performance | tee cpu*/cpufreq/scaling_governor
       - name: fuzz ARCH_PRO docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
       - name: Upload project
@@ -50,9 +54,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: fuzzware_image
-          run: ls
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
+      - name: Setup AFL
+        run: |
+          sudo echo core >/proc/sys/kernel/core_pattern
+          sudo cd /sys/devices/system/cpu
+          sudo echo performance | tee cpu*/cpufreq/scaling_governor
       - name: Fuzz CNC docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
       - name: Upload artifacts
