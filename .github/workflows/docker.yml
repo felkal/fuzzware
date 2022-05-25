@@ -34,12 +34,11 @@ jobs:
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
         run: |
-          sudo su
-          id
+          sudo id
           ls -lah /proc/sys/kernel/core_pattern
-          echo core | tee /proc/sys/kernel/core_pattern
+          echo core | sudo tee /proc/sys/kernel/core_pattern
           cd /sys/devices/system/cpu
-          echo performance | tee cpu*/cpufreq/scaling_governor
+          echo performance | sudo tee cpu*/cpufreq/scaling_governor
           exit
       - name: fuzz ARCH_PRO docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
