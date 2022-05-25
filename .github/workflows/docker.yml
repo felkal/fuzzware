@@ -33,15 +33,9 @@ jobs:
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
-        run: |
-          sudo id
-          ls -lah /proc/sys/kernel/core_pattern
-          echo core | sudo tee /proc/sys/kernel/core_pattern
-          cd /sys/devices/system/cpu
-          echo performance | sudo tee cpu*/cpufreq/scaling_governor
-          exit
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: fuzz ARCH_PRO docker
-        run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
+        run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
       - name: Upload project
         uses: actions/upload-artifact@v3
         with:
@@ -60,14 +54,9 @@ jobs:
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
-        run: |
-          sudo su
-          echo core >/proc/sys/kernel/core_pattern
-          cd /sys/devices/system/cpu
-          echo performance | tee cpu*/cpufreq/scaling_governor
-          exit
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: Fuzz CNC docker
-        run: ./run_docker.sh --no-tty ./examples fuzzware pipeline -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
+        run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
