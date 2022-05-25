@@ -35,7 +35,9 @@ jobs:
       - name: Setup AFL
         run: |
           sudo su
-          echo core >/proc/sys/kernel/core_pattern
+          id
+          ls -lah /proc/sys/kernel/core_pattern
+          echo core | tee /proc/sys/kernel/core_pattern
           cd /sys/devices/system/cpu
           echo performance | tee cpu*/cpufreq/scaling_governor
           exit
