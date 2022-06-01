@@ -29,8 +29,8 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
+      #- name: Checkout repository
+      #  uses: actions/checkout@v3.0.0
       #- name: download fuzzware image
       #  uses: actions/download-artifact@v3
       #  with:
@@ -50,12 +50,12 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
-      - name: download fuzzware image
-        uses: actions/download-artifact@v3
-        with:
-          name: fuzzware_image
+      #- name: Checkout repository
+      #  uses: actions/checkout@v3.0.0
+      #- name: download fuzzware image
+      #  uses: actions/download-artifact@v3
+      #  with:
+      #    name: fuzzware_image
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
