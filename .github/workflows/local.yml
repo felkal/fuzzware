@@ -38,7 +38,7 @@ jobs:
 
   fuzzing_ARCH_PRO_docker:
     runs-on: ubuntu-20.04
-    needs: build
+    needs: build_local
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
