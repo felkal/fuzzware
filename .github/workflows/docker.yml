@@ -78,6 +78,8 @@ jobs:
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
           key: ${{ runner.os }}-arch-pro
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
       - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
 
