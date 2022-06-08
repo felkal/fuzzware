@@ -55,7 +55,7 @@ jobs:
       - name: Setup AFL
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: setup venv
-        run:
+        run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
           export VIRTUALENVWRAPPER_PYTHON
           source $(which virtualenvwrapper.sh)
