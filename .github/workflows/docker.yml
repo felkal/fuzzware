@@ -7,6 +7,9 @@ on:
       - github-ci
 
 jobs:
+  ############################################
+  #            Build                         #
+  ############################################
   build_docker:
     runs-on: ubuntu-20.04
     steps:
@@ -28,6 +31,9 @@ jobs:
         with:
           path: fuzzware_latest.tar
           key: ${{ runner.os }}-dockerbuild
+  ############################################
+  #            Fuzzing                       #
+  ############################################
   fuzzing_ARCH_PRO_docker:
     runs-on: ubuntu-20.04
     needs: build_docker
@@ -48,6 +54,7 @@ jobs:
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
           key: ${{ runner.os }}-arch-pro
+
   fuzzing_CNC_docker:
     runs-on: ubuntu-20.04
     needs: build_docker
@@ -87,6 +94,9 @@ jobs:
         run: docker load -i fuzzware_latest.tar
       - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
+  ############################################
+  #            Commands                      #
+  ############################################
   fuzzware_emu_docker:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
@@ -159,3 +169,7 @@ jobs:
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - run: ./run_docker.sh --no-tty ./examples/P2IM/CNC/fuzzware-project-docker fuzzware gentraces --dryrun
+  ############################################
+  #            Self-Contained                #
+  ############################################
+
