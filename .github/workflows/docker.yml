@@ -30,7 +30,7 @@ jobs:
     needs: build_docker
     steps:
       - name: ls1
-        run: ls
+        run: ls /home/runner/work/fuzzware/fuzzware
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
       - name: ls
@@ -55,7 +55,7 @@ jobs:
     needs: build_docker
     steps:
       - name: ls1
-        run: ls
+        run: ls /home/runner/work/fuzzware/fuzzware
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
       #- name: download fuzzware image
