@@ -78,6 +78,6 @@ jobs:
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
           key: ${{ runner.os }}-arch-pro
-      - run: ./run_docker.sh ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
+      - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
 
