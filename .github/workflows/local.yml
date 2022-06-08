@@ -55,7 +55,12 @@ jobs:
       - name: Setup AFL
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: setup venv
-        run: workon fuzzware
+        run:
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
       - name: fuzz ARCH_PRO docker
         run: fuzzware pipeline --no-tty --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
       - uses: actions/cache@v3
