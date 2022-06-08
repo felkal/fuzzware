@@ -18,16 +18,18 @@ jobs:
       - uses: actions/checkout@v3.0.0
       - run: git submodule sync --recursive
       - run: git submodule update --init --recursive
-
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
           pip3 install virtualenv virtualenvwrapper cython setuptools
       - uses: actions/cache@v3
+        id: local_install_cache
         with:
           path: /home/runner/.virtualenvs/
           key: ${{ runner.os }}-virtualenvs
-      - run: ./install_local.sh
+      - name: install local
+        if: steps.local_install_cache.outputs.cache-hit != 'true'
+        run: ./install_local.sh
       - uses: actions/cache@v3
         with:
           path: /home/runner/.virtualenvs/
@@ -46,6 +48,9 @@ jobs:
         with:
           path: /home/runner/.virtualenvs/
           key: ${{ runner.os }}-virtualenvs
+      - name: Install dependencies
+        run: |
+          pip3 install virtualenv virtualenvwrapper cython setuptools
       - name: Setup AFL
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: setup venv
