@@ -44,12 +44,9 @@ jobs:
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: fuzz ARCH_PRO docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:00:10 -n 2 ./pw-recovery/ARCH_PRO
-      - name: ls
-        run: |
-          ls examples/pw-recovery/ARCH_PRO/
       - uses: actions/cache@v3
         with:
-          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
           key: ${{ runner.os }}-arch-pro
   fuzzing_CNC_docker:
     runs-on: ubuntu-20.04
@@ -79,7 +76,7 @@ jobs:
           key: ${{ runner.os }}-dockerbuild
       - uses: actions/cache@v3
         with:
-          path: ./examples/pw-recovery/ARCH_PRO/fuzzware-project
+          path: ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
           key: ${{ runner.os }}-arch-pro
       - run: ./run_docker.sh ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
