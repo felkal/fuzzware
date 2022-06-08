@@ -12,7 +12,7 @@ jobs:
   #            Build                         #
   ############################################
 
-  build_docker:
+  build_local:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3.0.0
@@ -20,6 +20,6 @@ jobs:
       - run: git submodule update --init --recursive
       - name: Install dependencies
         run: |
-          sudo apt-get update && apt-get upgrade -y && sudo apt-get install -y python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
+          sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
           pip3 install virtualenv virtualenvwrapper cython setuptools
       - run: ./install_local.sh
