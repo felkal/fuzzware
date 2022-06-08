@@ -13,6 +13,7 @@ jobs:
       - name: Build fuzzware docker image
         uses: actions/checkout@v3.0.0
       - name: Cache project
+        id: build_docker_cache
         uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -20,7 +21,6 @@ jobs:
       - run: git submodule sync --recursive
       - run: git submodule update --init --recursive
       - name: build
-        id: build_docker_cache
         if: steps.build_docker_cache.outputs.cache-hit != 'true'
         run: ./build_docker.sh
       - name: Cache project
