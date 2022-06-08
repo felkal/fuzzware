@@ -76,7 +76,7 @@ jobs:
           key: ${{ runner.os }}-dockerbuild
       - uses: actions/cache@v3
         with:
-          path: ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
           key: ${{ runner.os }}-arch-pro
       - run: ./run_docker.sh ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
