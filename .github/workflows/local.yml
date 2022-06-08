@@ -62,7 +62,9 @@ jobs:
           set +e
           workon fuzzware
       - name: fuzz ARCH_PRO docker
-        run: fuzzware pipeline --no-tty --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
+        run: |
+          workon fuzzware
+          fuzzware pipeline --no-tty --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
