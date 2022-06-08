@@ -64,6 +64,11 @@ jobs:
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: Fuzz CNC docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:00:10 -n 2 ./P2IM/CNC
+      - uses: actions/cache@v3
+        with:
+          path: examples/P2IM/CNC/fuzzware-project-docker
+          key: ${{ runner.os }}-cnc
+
   fuzzware_cov_main_arch_pro_docker:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
@@ -82,4 +87,75 @@ jobs:
         run: docker load -i fuzzware_latest.tar
       - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
+  fuzzware_emu_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - run: ./run_docker.sh --no-tty . fuzzware emu ./examples/pw-recovery/ARCH_PRO/basic_exercises.elf --config ./examples/pw-recovery/ARCH_PRO/config.yml -v
 
+  fuzzware_replay_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ fuzzware replay --covering main -v
+
+
+  fuzzware_gentraces_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware gentraces --dryrun
+
+  fuzzware_genstats_CNC_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_CNC_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild
+      - uses: actions/cache@v3
+        with:
+          path: examples/P2IM/CNC/fuzzware-project-docker
+          key: ${{ runner.os }}-cnc
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - run: ./run_docker.sh --no-tty ./examples/P2IM/CNC/fuzzware-project-docker fuzzware gentraces --dryrun
