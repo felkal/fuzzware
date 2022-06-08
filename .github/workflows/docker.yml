@@ -20,71 +20,56 @@ jobs:
         with:
           path: fuzzware_latest.tar
           key: ${{ runner.os }}-dockerbuild
-      #- name: Upload project
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: fuzzware_image
-      #    path: fuzzware_latest.tar
   fuzzing_ARCH_PRO_docker:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
-      - name: ls1
-        run: ls /home/runner/work/fuzzware/fuzzware
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
           key: ${{ runner.os }}-dockerbuild
-      - name: ls
-        run: ls
-      #- name: download fuzzware image
-      #  uses: actions/download-artifact@v3
-      #  with:
-      #    name: fuzzware_image
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: fuzz ARCH_PRO docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./pw-recovery/ARCH_PRO
-      #- name: Upload project
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: ARCH_PRO_docker_fuzzware-project
-      #    path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          key: ${{ runner.os }}-arch-pro
   fuzzing_CNC_docker:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
-      - name: ls1
-        run: ls /home/runner/work/fuzzware/fuzzware
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
           key: ${{ runner.os }}-dockerbuild
-      #- name: download fuzzware image
-      #  uses: actions/download-artifact@v3
-      #  with:
-      #    name: fuzzware_image
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
         run: echo core | sudo tee /proc/sys/kernel/core_pattern
       - name: Fuzz CNC docker
         run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:05:00 -n 2 ./P2IM/CNC
-      #- name: Upload artifacts
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: CNC_docker_fuzzware-project
-      #    path: examples/P2IM/CNC/fuzzware-project-docker/
-  #fuzzware_cov_main_docker:
-  #  runs-on: ubuntu-20.04
-  #  needs: fuzzing_ARCH_PRO_docker
-  #  steps:
-  #    -
+  fuzzware_cov_main_arch_pro_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          key: ${{ runner.os }}-arch-pro
+      - run: ./run_docker.sh ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
 
