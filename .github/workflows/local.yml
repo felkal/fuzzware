@@ -62,6 +62,7 @@ jobs:
           source $(which virtualenvwrapper.sh)
           set +e
           workon fuzzware
+          echo $VIRTUAL_ENV
           ls ~/.virtualenvs/
           pip3 show fuzzware
           pip3 show fuzzware-pipeline
