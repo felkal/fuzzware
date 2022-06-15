@@ -34,6 +34,17 @@ jobs:
         with:
           path: /home/runner/.virtualenvs/
           key: ${{ runner.os }}-virtualenvs
+      - name: fuzz ARCH_PRO docker
+        run: |
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
+          echo $VIRTUAL_ENV
+          ls ~/.virtualenvs/
+          pip3 show fuzzware
+          pip3 show fuzzware-pipeline
   ############################################
   #            Fuzzing                       #
   ############################################
