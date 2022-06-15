@@ -45,6 +45,10 @@ jobs:
           ls ~/.virtualenvs/
           pip3 show fuzzware
           pip3 show fuzzware-pipeline
+          find ~/.virtualenvs | grep fuzzware
+          find /usr/lib/ | grep fuzzware
+          fuzzware pipeline --no-tty --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
+
   ############################################
   #            Fuzzing                       #
   ############################################
