@@ -26,14 +26,14 @@ jobs:
         id: local_install_cache
         with:
           path: /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs
+          key: ${{ runner.os }}-virtualenvs-2
       - name: install local
         if: steps.local_install_cache.outputs.cache-hit != 'true'
         run: ./install_local.sh
       - uses: actions/cache@v3
         with:
           path: /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs
+          key: ${{ runner.os }}-virtualenvs-2
       - name: fuzz ARCH_PRO docker
         run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
