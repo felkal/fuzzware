@@ -90,7 +90,7 @@ jobs:
           ls /home/runner/work/fuzzware/fuzzware/emulator
           pip3 show fuzzware
           pip3 show fuzzware-pipeline
-          fuzzware pipeline --no-tty --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
+          fuzzware pipeline --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
