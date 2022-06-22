@@ -28,7 +28,7 @@ jobs:
           path: |
             /usr/lib/python3.8/
             /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs-6
+          key: ${{ runner.os }}-virtualenvs-7
       - name: install local
         if: steps.local_install_cache.outputs.cache-hit != 'true'
         run: ./install_local.sh
@@ -37,7 +37,7 @@ jobs:
           path: |
             /home/runner/work/fuzzware/fuzzware
             /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs-6
+          key: ${{ runner.os }}-virtualenvs-7
       - name: fuzz ARCH_PRO docker
         run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
@@ -65,7 +65,7 @@ jobs:
           path: |
             /home/runner/work/fuzzware/fuzzware
             /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs-6
+          key: ${{ runner.os }}-virtualenvs-7
       - name: Install dependencies
         run: |
           sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y tree python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
