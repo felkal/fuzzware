@@ -36,7 +36,6 @@ jobs:
         with:
           path: |
             /home/runner/work/fuzzware/fuzzware
-            /usr/lib/python3.8/
             /home/runner/.virtualenvs/
           key: ${{ runner.os }}-virtualenvs-6
       - name: fuzz ARCH_PRO docker
@@ -65,7 +64,6 @@ jobs:
         with:
           path: |
             /home/runner/work/fuzzware/fuzzware
-            /usr/lib/python3.8/
             /home/runner/.virtualenvs/
           key: ${{ runner.os }}-virtualenvs-6
       - name: Install dependencies
