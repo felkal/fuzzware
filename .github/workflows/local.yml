@@ -83,7 +83,7 @@ jobs:
           echo $VIRTUAL_ENV
           echo lel
           echo fuzzware-contents
-          ls /home/runner/work/fuzzware
+          tree /home/runner/work/fuzzware/fuzzware
           echo fuzzware-fuzzware-contents
           ls /home/runner/work/fuzzware/fuzzware
           echo pipeline-contents
