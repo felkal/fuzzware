@@ -81,8 +81,13 @@ jobs:
           echo lel
           echo $VIRTUAL_ENV
           echo lel
+          echo fuzzware-contents
+          ls /home/runner/work/fuzzware
+          echo fuzzware-fuzzware-contents
+          ls /home/runner/work/fuzzware/fuzzware
+          echo pipeline-contents
           ls /home/runner/work/fuzzware/fuzzware/pipeline
-          echo emulator
+          echo emulator-contents
           ls /home/runner/work/fuzzware/fuzzware/emulator
           pip3 show fuzzware
           pip3 show fuzzware-pipeline
