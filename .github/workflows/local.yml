@@ -58,8 +58,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
-      - run: git submodule sync --recursive
-      - run: git submodule update --init --recursive
       - uses: actions/cache@v3
         with:
           path: |
@@ -83,7 +81,9 @@ jobs:
           echo lel
           echo $VIRTUAL_ENV
           echo lel
-          tree ~/.virtualenvs/
+          /home/runner/work/fuzzware/fuzzware/pipeline
+          echo emulator
+          /home/runner/work/fuzzware/fuzzware/emulator
           pip3 show fuzzware
           pip3 show fuzzware-pipeline
           fuzzware pipeline --no-tty --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
