@@ -26,14 +26,11 @@ jobs:
         #if: steps.local_install_cache.outputs.cache-hit != 'true'
         run: ./install_local.sh
       - uses: actions/cache@v3
-        id: venv_cache
-        with:
-          path: /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs-10
-      - uses: actions/cache@v3
         id: local_install_cache
         with:
-          path: /home/runner/work/fuzzware/fuzzware/
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/.virtualenvs/
           key: ${{ runner.os }}-local-install-3
       - name: fuzz ARCH_PRO docker
         run: |
@@ -56,14 +53,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
-        id: venv_cache
-        with:
-          path: /home/runner/.virtualenvs/
-          key: ${{ runner.os }}-virtualenvs-10
-      - uses: actions/cache@v3
         id: local_install_cache
         with:
-          path: /home/runner/work/fuzzware/fuzzware/
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/.virtualenvs/
           key: ${{ runner.os }}-local-install-3
       - name: Install dependencies
         run: |
