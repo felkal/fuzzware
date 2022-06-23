@@ -22,6 +22,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
           pip3 install virtualenv virtualenvwrapper cython setuptools
+      - name: Remove -march=native from build
+        run: sed -i 's/-march=native//g' /home/runner/work/fuzzware/fuzzware/emulator/unicorn/fuzzware-unicorn/Makefile
       - name: install local
         #if: steps.local_install_cache.outputs.cache-hit != 'true'
         run: ./install_local.sh
@@ -34,15 +36,6 @@ jobs:
             /home/runner/work/fuzzware/fuzzware/pipeline/
             /home/runner/.virtualenvs/
           key: ${{ runner.os }}-local-install-${{ github.sha }}
-      - name: fuzz ARCH_PRO docker
-        run: |
-          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
-          export VIRTUALENVWRAPPER_PYTHON
-          source $(which virtualenvwrapper.sh)
-          set +e
-          workon fuzzware
-          echo $VIRTUAL_ENV
-          ls ~/.virtualenvs/
 
   ############################################
   #            Fuzzing                       #
