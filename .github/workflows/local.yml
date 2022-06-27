@@ -77,6 +77,10 @@ jobs:
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project/logs
 
   fuzzing_CNC:
     runs-on: ubuntu-20.04
@@ -113,6 +117,10 @@ jobs:
         with:
           path: examples/P2IM/CNC/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-cnc-${{ github.sha }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/P2IM/CNC/fuzzware-project/logs
 
   ############################################
   #            Commands                      #
@@ -154,6 +162,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware cov -p ./examples/pw-recovery/ARCH_PRO/fuzzware-project main
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project/logs
 
   fuzzware_emu_arch_pro:
     runs-on: ubuntu-20.04
@@ -191,6 +203,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware emu ./examples/pw-recovery/ARCH_PRO/basic_exercises.elf --config ./examples/pw-recovery/ARCH_PRO/config.yml -v
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project/logs
 
   fuzzware_replay_arch_pro:
     runs-on: ubuntu-20.04
@@ -228,6 +244,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware replay -p ./examples/pw-recovery/ARCH_PRO/fuzzware-project/ --covering main -v
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project/logs
 
   fuzzware_gentraces_arch_pro:
     runs-on: ubuntu-20.04
@@ -265,6 +285,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware gentraces -p ./examples/pw-recovery/ARCH_PRO/fuzzware-project --dryrun
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project/logs
 
   fuzzware_genstats_cnc:
     runs-on: ubuntu-20.04
@@ -302,7 +326,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware genstats -p ./examples/P2IM/CNC/fuzzware-project
-
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: examples/P2IM/CNC/fuzzware-project/logs
   ############################################
   #            Self-Contained                #
   ############################################
@@ -345,6 +372,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware cov -p ./still_replayable_ARCH_PRO main
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: still_replayable_ARCH_PRO/logs
 
   fuzzware_emu_cnc_self_contained:
     runs-on: ubuntu-20.04
@@ -384,6 +415,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware emu ./still_replayable_CNC/data/CNC.elf --config ./still_replayable_CNC/data/config.yml -v
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: still_replayable_CNC/logs
 
   fuzzware_replay_arch_pro_self_contained:
     runs-on: ubuntu-20.04
@@ -423,6 +458,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware replay -p ./still_replayable_ARCH_PRO --covering main -v
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: still_replayable_ARCH_PRO/logs
 
   fuzzware_gentraces_arch_pro_self_contained:
     runs-on: ubuntu-20.04
@@ -462,6 +501,10 @@ jobs:
           set +e
           workon fuzzware
           fuzzware gentraces -p ./still_replayable_ARCH_PRO --dryrun
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: still_replayable_ARCH_PRO/logs
 
   fuzzware_genstats_cnc_self_contained:
     runs-on: ubuntu-20.04
@@ -512,3 +555,7 @@ jobs:
             fi
             echo "Output files missing!"
             exit 1
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: still_replayable_CNC/logs
