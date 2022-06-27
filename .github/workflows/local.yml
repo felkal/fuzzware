@@ -346,9 +346,9 @@ jobs:
           workon fuzzware
           fuzzware cov -p ./still_replayable_ARCH_PRO main
 
-  fuzzware_emu_arch_pro_self_contained:
+  fuzzware_emu_cnc_self_contained:
     runs-on: ubuntu-20.04
-    needs: fuzzing_ARCH_PRO
+    needs: fuzzing_CNC
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
@@ -375,8 +375,8 @@ jobs:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
       - name: Move project directory
-        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project ./still_replayable_CNC
-      - name: Execute fuzzware emu (ARCH_PRO)
+        run: mv examples/P2IM/CNC/fuzzware-project/ ./still_replayable_CNC
+      - name: Execute fuzzware emu (CNC)
         run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
           export VIRTUALENVWRAPPER_PYTHON
@@ -453,7 +453,7 @@ jobs:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
       - name: Move project directory
-        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project/ ./still_replayable_CNC
+        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project/ ./still_replayable_ARCH_PRO
       - name: Execute fuzzware gentraces (ARCH_PRO)
         run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
@@ -461,7 +461,7 @@ jobs:
           source $(which virtualenvwrapper.sh)
           set +e
           workon fuzzware
-          fuzzware gentraces -p ../still_replayable_CNC --dryrun
+          fuzzware gentraces -p ../still_replayable_ARCH_PRO --dryrun
 
   fuzzware_genstats_cnc_self_contained:
     runs-on: ubuntu-20.04
