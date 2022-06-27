@@ -111,7 +111,7 @@ jobs:
           fuzzware pipeline --skip-afl-cpufreq --run-for 00:00:00:10 -n 2  ./examples/P2IM/CNC
       - uses: actions/cache@v3
         with:
-          path: /examples/P2IM/CNC/fuzzware-project
+          path: examples/P2IM/CNC/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-cnc-${{ github.sha }}
 
   ############################################
@@ -293,7 +293,7 @@ jobs:
       - name: restore fuzzware-project folder
         uses: actions/cache@v3
         with:
-          path: /examples/P2IM/CNC/fuzzware-project
+          path: examples/P2IM/CNC/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-cnc-${{ github.sha }}
       - name: Execute fuzzware genstats (CNC)
         run: |
