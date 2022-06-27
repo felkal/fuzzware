@@ -203,7 +203,7 @@ jobs:
       - name: Move project directory
         run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
       - name: Run fuzzware gentraces Self-Contained (ARCH_PRO)
-      - run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
+        run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
 
   fuzzware_replay_self_contained_docker:
     runs-on: ubuntu-20.04
