@@ -372,8 +372,8 @@ jobs:
       - name: restore fuzzware-project folder
         uses: actions/cache@v3
         with:
-          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
-          key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
+          path: examples/P2IM/CNC/fuzzware-project
+          key: ${{ runner.os }}-fuzzware-project-local-cnc-${{ github.sha }}
       - name: Move project directory
         run: mv examples/P2IM/CNC/fuzzware-project/ ./still_replayable_CNC
       - name: Execute fuzzware emu (CNC)
@@ -461,7 +461,7 @@ jobs:
           source $(which virtualenvwrapper.sh)
           set +e
           workon fuzzware
-          fuzzware gentraces -p ../still_replayable_ARCH_PRO --dryrun
+          fuzzware gentraces -p ./still_replayable_ARCH_PRO --dryrun
 
   fuzzware_genstats_cnc_self_contained:
     runs-on: ubuntu-20.04
