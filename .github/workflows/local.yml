@@ -375,7 +375,7 @@ jobs:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
       - name: Move project directory
-        run: mv examples/P2IM/CNC/fuzzware-project/ ./still_replayable_CNC
+        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project ./still_replayable_CNC
       - name: Execute fuzzware emu (ARCH_PRO)
         run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
@@ -453,7 +453,7 @@ jobs:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
       - name: Move project directory
-        run: mv examples/P2IM/CNC/fuzzware-project/ ./still_replayable_CNC
+        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project/ ./still_replayable_CNC
       - name: Execute fuzzware gentraces (ARCH_PRO)
         run: |
           VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
