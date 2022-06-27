@@ -383,7 +383,7 @@ jobs:
           source $(which virtualenvwrapper.sh)
           set +e
           workon fuzzware
-          fuzzware emu ./still_replayable_CNC/data/basic_exercises.elf --config ./still_replayable_CNC/data/config.yml -v
+          fuzzware emu ./still_replayable_CNC/data/CNC.elf --config ./still_replayable_CNC/data/config.yml -v
 
   fuzzware_replay_arch_pro_self_contained:
     runs-on: ubuntu-20.04
