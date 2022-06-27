@@ -22,17 +22,18 @@ jobs:
         uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - run: git submodule sync --recursive
       - run: git submodule update --init --recursive
+      - name: Remove -march=native from build
+        run: sed -i 's/-march=native//g' /home/runner/work/fuzzware/fuzzware/emulator/unicorn/fuzzware-unicorn/Makefile
       - name: build
-        if: steps.build_docker_cache.outputs.cache-hit != 'true'
         run: ./build_docker.sh
       - name: Cache project
         uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
 
   ############################################
   #            Fuzzing                       #
@@ -47,7 +48,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
@@ -57,7 +58,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
 
   fuzzing_CNC_docker:
     runs-on: ubuntu-20.04
@@ -68,7 +69,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Setup AFL
@@ -78,7 +79,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: examples/P2IM/CNC/fuzzware-project-docker
-          key: ${{ runner.os }}-cnc
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
 
   ############################################
   #            Commands                      #
@@ -93,14 +94,15 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
-      - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
+      - name: Run fuzzware cov (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
 
   fuzzware_emu_docker:
     runs-on: ubuntu-20.04
@@ -111,14 +113,15 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
-      - run: ./run_docker.sh --no-tty . fuzzware emu ./examples/pw-recovery/ARCH_PRO/basic_exercises.elf --config ./examples/pw-recovery/ARCH_PRO/config.yml -v
+      - name: Run fuzzware emu (ARCH_PRO)
+        run: ./run_docker.sh --no-tty . fuzzware emu ./examples/pw-recovery/ARCH_PRO/basic_exercises.elf --config ./examples/pw-recovery/ARCH_PRO/config.yml -v
 
   fuzzware_replay_docker:
     runs-on: ubuntu-20.04
@@ -129,14 +132,15 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
-      - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ fuzzware replay --covering main -v
+      - name: Run fuzzware replay (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ fuzzware replay --covering main -v
 
   fuzzware_gentraces_docker:
     runs-on: ubuntu-20.04
@@ -147,14 +151,15 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
-      - run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware gentraces --dryrun
+      - name: Run fuzzware gentraces (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware gentraces --dryrun
 
   fuzzware_genstats_CNC_docker:
     runs-on: ubuntu-20.04
@@ -165,14 +170,15 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/P2IM/CNC/fuzzware-project-docker
-          key: ${{ runner.os }}-cnc
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
-      - run: ./run_docker.sh --no-tty ./examples/P2IM/CNC/fuzzware-project-docker fuzzware gentraces --dryrun
+      - name: Run fuzzware gentraces (CNC)
+        run: ./run_docker.sh --no-tty ./examples/P2IM/CNC/fuzzware-project-docker fuzzware gentraces --dryrun
 
   ############################################
   #            Self-Contained                #
@@ -187,15 +193,16 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Move project directory
         run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
+      - name: Run fuzzware gentraces Self-Contained (ARCH_PRO)
       - run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
 
   fuzzware_replay_self_contained_docker:
@@ -207,16 +214,17 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Move project directory
         run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
-      - run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware replay --covering main -v
+      - name: Run fuzzware replay Self-Contained (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware replay --covering main -v
 
   fuzzware_gentraces_self_contained_docker:
     runs-on: ubuntu-20.04
@@ -227,16 +235,17 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
-          key: ${{ runner.os }}-arch-pro
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Move project directory
         run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
-      - run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
+      - name: Run fuzzware gentraces Self-Contained (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
 
   fuzzware_emu_self_contained_docker:
     runs-on: ubuntu-20.04
@@ -247,16 +256,17 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/P2IM/CNC/fuzzware-project-docker
-          key: ${{ runner.os }}-cnc
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Move project directory
         run: mv examples/P2IM/CNC/fuzzware-project-docker/ ./still_replayable_CNC_docker
-      - run: ./run_docker.sh --no-tty ./still_replayable_CNC_docker fuzzware emu data/CNC.elf --config data/config.yml -v
+      - name: Run fuzzware emu Self-Contained (CNC)
+        run: ./run_docker.sh --no-tty ./still_replayable_CNC_docker fuzzware emu data/CNC.elf --config data/config.yml -v
 
   fuzzware_genstats_self_contained_CNC_docker:
     runs-on: ubuntu-20.04
@@ -267,16 +277,16 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
-          key: ${{ runner.os }}-dockerbuild
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
       - uses: actions/cache@v3
         with:
           path: examples/P2IM/CNC/fuzzware-project-docker
-          key: ${{ runner.os }}-cnc
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
       - name: load fuzzware image
         run: docker load -i fuzzware_latest.tar
       - name: Move project directory
         run: mv examples/P2IM/CNC/fuzzware-project-docker/ ./still_replayable_CNC_docker
-      - name: run genstats
+      - name: Run fuzzware genstats Self-Contained (CNC)
         run: ./run_docker.sh --no-tty ./still_replayable_CNC_docker fuzzware genstats
       - name: Check if output files were created
         run: |
