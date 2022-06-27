@@ -73,7 +73,7 @@ jobs:
           workon fuzzware
           fuzzware pipeline --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
       - name: Cache fuzzware-project folder
-      - uses: actions/cache@v3
+        uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
