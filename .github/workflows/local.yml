@@ -41,7 +41,7 @@ jobs:
   #            Fuzzing                       #
   ############################################
 
-  fuzzing_ARCH_PRO_docker:
+  fuzzing_ARCH_PRO:
     runs-on: ubuntu-20.04
     needs: build_local
     steps:
@@ -72,12 +72,13 @@ jobs:
           set +e
           workon fuzzware
           fuzzware pipeline --skip-afl-cpufreq --run-for 00:00:00:10 -n 2 ./examples/pw-recovery/ARCH_PRO
+      - name: Cache fuzzware-project folder
       - uses: actions/cache@v3
         with:
           path: examples/pw-recovery/ARCH_PRO/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
 
-  fuzzing_CNC_docker:
+  fuzzing_CNC:
     runs-on: ubuntu-20.04
     needs: build_local
     steps:
@@ -112,3 +113,193 @@ jobs:
         with:
           path: /examples/P2IM/CNC/fuzzware-project
           key: ${{ runner.os }}-fuzzware-project-local-cnc-${{ github.sha }}
+
+  ############################################
+  #            Commands                      #
+  ############################################
+
+
+  fuzzware_cov_main_arch_pro:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y tree python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
+          sudo apt-get remove -y virtualenvwrapper
+          pip3 install virtualenv virtualenvwrapper cython setuptools
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      # Cache does not seem to include subfolders, so we specify them manually
+      - uses: actions/cache@v3
+        id: local_install_cache
+        with:
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/work/fuzzware/fuzzware/emulator/
+            /home/runner/work/fuzzware/fuzzware/pipeline/
+            /home/runner/.virtualenvs/
+          key: ${{ runner.os }}-local-install-${{ github.sha }}
+      - name: restore fuzzware-project folder
+        uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
+      - name: Execute fuzzware cov main (ARCH_PRO)
+        run: |
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
+          fuzzware cov -p ./examples/pw-recovery/ARCH_PRO/fuzzware-project main
+
+  fuzzware_emu_arch_pro:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y tree python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
+          sudo apt-get remove -y virtualenvwrapper
+          pip3 install virtualenv virtualenvwrapper cython setuptools
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      # Cache does not seem to include subfolders, so we specify them manually
+      - uses: actions/cache@v3
+        id: local_install_cache
+        with:
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/work/fuzzware/fuzzware/emulator/
+            /home/runner/work/fuzzware/fuzzware/pipeline/
+            /home/runner/.virtualenvs/
+          key: ${{ runner.os }}-local-install-${{ github.sha }}
+      - name: restore fuzzware-project folder
+        uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
+      - name: Execute fuzzware emu (ARCH_PRO)
+        run: |
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
+          fuzzware emu ./examples/pw-recovery/ARCH_PRO/basic_exercises.elf --config ./examples/pw-recovery/ARCH_PRO/config.yml -v
+
+  fuzzware_replay_arch_pro:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y tree python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
+          sudo apt-get remove -y virtualenvwrapper
+          pip3 install virtualenv virtualenvwrapper cython setuptools
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      # Cache does not seem to include subfolders, so we specify them manually
+      - uses: actions/cache@v3
+        id: local_install_cache
+        with:
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/work/fuzzware/fuzzware/emulator/
+            /home/runner/work/fuzzware/fuzzware/pipeline/
+            /home/runner/.virtualenvs/
+          key: ${{ runner.os }}-local-install-${{ github.sha }}
+      - name: restore fuzzware-project folder
+        uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
+      - name: Execute fuzzware replay (ARCH_PRO)
+        run: |
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
+          fuzzware replay -p ./examples/pw-recovery/ARCH_PRO/fuzzware-project/ --covering main -v
+
+  fuzzware_gentraces_arch_pro:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y tree python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
+          sudo apt-get remove -y virtualenvwrapper
+          pip3 install virtualenv virtualenvwrapper cython setuptools
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      # Cache does not seem to include subfolders, so we specify them manually
+      - uses: actions/cache@v3
+        id: local_install_cache
+        with:
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/work/fuzzware/fuzzware/emulator/
+            /home/runner/work/fuzzware/fuzzware/pipeline/
+            /home/runner/.virtualenvs/
+          key: ${{ runner.os }}-local-install-${{ github.sha }}
+      - name: restore fuzzware-project folder
+        uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project
+          key: ${{ runner.os }}-fuzzware-project-local-arch-pro-${{ github.sha }}
+      - name: Execute fuzzware gentraces (ARCH_PRO)
+        run: |
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
+          fuzzware gentraces -p ./examples/pw-recovery/ARCH_PRO/fuzzware-project --dryrun
+
+  fuzzware_genstats_cnc:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_CNC
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y tree python python3 python3-pip automake tmux redis wget autoconf sudo htop cmake clang vim unzip git binutils-arm-none-eabi
+          sudo apt-get remove -y virtualenvwrapper
+          pip3 install virtualenv virtualenvwrapper cython setuptools
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      # Cache does not seem to include subfolders, so we specify them manually
+      - uses: actions/cache@v3
+        id: local_install_cache
+        with:
+          path: |
+            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/work/fuzzware/fuzzware/emulator/
+            /home/runner/work/fuzzware/fuzzware/pipeline/
+            /home/runner/.virtualenvs/
+          key: ${{ runner.os }}-local-install-${{ github.sha }}
+      - name: restore fuzzware-project folder
+        uses: actions/cache@v3
+        with:
+          path: /examples/P2IM/CNC/fuzzware-project
+          key: ${{ runner.os }}-fuzzware-project-local-cnc-${{ github.sha }}
+      - name: Execute fuzzware genstats (CNC)
+        run: |
+          VIRTUALENVWRAPPER_PYTHON="${VIRTUALENVWRAPPER_PYTHON:=$(which python3)}"
+          export VIRTUALENVWRAPPER_PYTHON
+          source $(which virtualenvwrapper.sh)
+          set +e
+          workon fuzzware
+          fuzzware genstats -p ./examples/P2IM/CNC/fuzzware-project
