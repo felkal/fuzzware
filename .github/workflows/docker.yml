@@ -43,8 +43,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -64,8 +62,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -89,8 +85,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -108,8 +102,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -127,8 +119,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -146,8 +136,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -165,8 +153,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_CNC_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -188,8 +174,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -209,8 +193,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -230,8 +212,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_ARCH_PRO_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -251,8 +231,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_CNC_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
@@ -272,8 +250,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: fuzzing_CNC_docker
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3.0.0
       - uses: actions/cache@v3
         with:
           path: fuzzware_latest.tar
