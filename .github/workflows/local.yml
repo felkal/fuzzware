@@ -31,7 +31,7 @@ jobs:
         id: local_install_cache
         with:
           path: |
-            /home/runner/work/fuzzware/fuzzware/
+            /home/runner/work/fuzzware/fuzzware/*
             /home/runner/work/fuzzware/fuzzware/emulator/
             /home/runner/work/fuzzware/fuzzware/pipeline/
             /home/runner/.virtualenvs/
