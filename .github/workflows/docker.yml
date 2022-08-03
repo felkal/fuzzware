@@ -1,0 +1,301 @@
+name: docker
+
+on:
+  push:
+    branches:
+      - main
+      - github-ci
+
+jobs:
+
+  ############################################
+  #            Build                         #
+  ############################################
+
+  build_docker:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Build fuzzware docker image
+        uses: actions/checkout@v3.0.0
+      - name: Cache project
+        id: build_docker_cache
+        uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - run: git submodule sync --recursive
+      - run: git submodule update --init --recursive
+      - name: Remove -march=native from build
+        run: sed -i 's/-march=native//g' /home/runner/work/fuzzware/fuzzware/emulator/unicorn/fuzzware-unicorn/Makefile
+      - name: build
+        run: ./build_docker.sh
+      - name: Cache project
+        uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+
+  ############################################
+  #            Fuzzing                       #
+  ############################################
+
+  fuzzing_ARCH_PRO_docker:
+    runs-on: ubuntu-20.04
+    needs: build_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      - name: fuzz ARCH_PRO docker
+        run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:00:10 -n 2 ./pw-recovery/ARCH_PRO
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+
+  fuzzing_CNC_docker:
+    runs-on: ubuntu-20.04
+    needs: build_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Setup AFL
+        run: echo core | sudo tee /proc/sys/kernel/core_pattern
+      - name: Fuzz CNC docker
+        run: ./run_docker.sh --no-tty ./examples fuzzware pipeline --skip-afl-cpufreq -p fuzzware-project-docker --run-for 00:00:00:10 -n 2 ./P2IM/CNC
+      - uses: actions/cache@v3
+        with:
+          path: examples/P2IM/CNC/fuzzware-project-docker
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
+
+  ############################################
+  #            Commands                      #
+  ############################################
+
+  fuzzware_cov_main_arch_pro_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Run fuzzware cov (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware cov main
+
+  fuzzware_emu_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Run fuzzware emu (ARCH_PRO)
+        run: ./run_docker.sh --no-tty . fuzzware emu ./examples/pw-recovery/ARCH_PRO/basic_exercises.elf --config ./examples/pw-recovery/ARCH_PRO/config.yml -v
+
+  fuzzware_replay_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Run fuzzware replay (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ fuzzware replay --covering main -v
+
+  fuzzware_gentraces_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Run fuzzware gentraces (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./examples/pw-recovery/ARCH_PRO/fuzzware-project-docker fuzzware gentraces --dryrun
+
+  fuzzware_genstats_CNC_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_CNC_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/P2IM/CNC/fuzzware-project-docker
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Run fuzzware gentraces (CNC)
+        run: ./run_docker.sh --no-tty ./examples/P2IM/CNC/fuzzware-project-docker fuzzware gentraces --dryrun
+
+  ############################################
+  #            Self-Contained                #
+  ############################################
+
+  fuzzware_cov_self_contained_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Move project directory
+        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
+      - name: Run fuzzware gentraces Self-Contained (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
+
+  fuzzware_replay_self_contained_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Move project directory
+        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
+      - name: Run fuzzware replay Self-Contained (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware replay --covering main -v
+
+  fuzzware_gentraces_self_contained_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_ARCH_PRO_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/pw-recovery/ARCH_PRO/fuzzware-project-docker
+          key: ${{ runner.os }}-arch-pro-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Move project directory
+        run: mv examples/pw-recovery/ARCH_PRO/fuzzware-project-docker/ ./still_replayable_ARCH_PRO_docker
+      - name: Run fuzzware gentraces Self-Contained (ARCH_PRO)
+        run: ./run_docker.sh --no-tty ./still_replayable_ARCH_PRO_docker fuzzware gentraces --dryrun
+
+  fuzzware_emu_self_contained_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_CNC_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/P2IM/CNC/fuzzware-project-docker
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Move project directory
+        run: mv examples/P2IM/CNC/fuzzware-project-docker/ ./still_replayable_CNC_docker
+      - name: Run fuzzware emu Self-Contained (CNC)
+        run: ./run_docker.sh --no-tty ./still_replayable_CNC_docker fuzzware emu data/CNC.elf --config data/config.yml -v
+
+  fuzzware_genstats_self_contained_CNC_docker:
+    runs-on: ubuntu-20.04
+    needs: fuzzing_CNC_docker
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.0
+      - uses: actions/cache@v3
+        with:
+          path: fuzzware_latest.tar
+          key: ${{ runner.os }}-dockerbuild-${{ github.sha }}
+      - uses: actions/cache@v3
+        with:
+          path: examples/P2IM/CNC/fuzzware-project-docker
+          key: ${{ runner.os }}-cnc-${{ github.sha }}
+      - name: load fuzzware image
+        run: docker load -i fuzzware_latest.tar
+      - name: Move project directory
+        run: mv examples/P2IM/CNC/fuzzware-project-docker/ ./still_replayable_CNC_docker
+      - name: Run fuzzware genstats Self-Contained (CNC)
+        run: ./run_docker.sh --no-tty ./still_replayable_CNC_docker fuzzware genstats
+      - name: Check if output files were created
+        run: |
+            FILE1=./still_replayable_CNC_docker/stats/covered_bbs_by_second_into_experiment.csv
+            FILE2=./still_replayable_CNC_docker/stats/job_timing_summary.csv
+            if [[ -f "$FILE1"  && -f "$FILE2" ]]
+            then
+                echo "Output files were created!"
+                exit 0
+            fi
+            echo "Output files missing!"
+            exit 1
