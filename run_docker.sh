@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 DIR="$(dirname "$(readlink -f "$0")")"
 IMAGE=""
 targets_dir=""
 cmd=""
+NO_TTY=""
 while [[ $# -gt 0 ]]; do
     case $1 in
         -d)
@@ -23,6 +24,10 @@ while [[ $# -gt 0 ]]; do
                 cmd="$cmd $1"
                 shift
             done
+            ;;
+        --no-tty)
+            NO_TTY="true"
+            shift
             ;;
         -r)
             shift
@@ -59,8 +64,7 @@ fi
 echo "[+] Mapping local dir '$targets_dir' into container"
 echo "[+] Executing command: '$cmd'"
 # Map targets directory into container
-current_user=$(whoami)
-if [ "$current_user" == "gitlab-runner" ]; then
+if [[ ! -z "$NO_TTY" ]]; then
     docker_options="-i"
     echo "[+] Running with -i"
 else
